@@ -1,0 +1,22 @@
+{
+  "name": "SimpleGame",
+  "version": "0.0.1",
+  "description": "Simple Game using Socket.io",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Rahkeen/SimpleGame.git"
+  },
+  "author": "Rikin Marfatia, Wesley Sun",
+  "license": "BSD-2-Clause",
+  "bugs": {
+    "url": "https://github.com/Rahkeen/SimpleGame/issues"
+  },
+  "dependencies": {
+    "express": "~4.13.3",
+    "socket.io": "~1.3.6"
+  }
+}

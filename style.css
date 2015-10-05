@@ -1,0 +1,125 @@
+* { 
+    margin: 0; 
+    padding: 0;
+    cursor: default;
+}
+body {
+    
+    margin:0;
+    padding:0;
+}
+html, #chatInput{
+  font-family:
+    "HelveticaNeue-Light",
+    "Helvetica Neue Light",
+    "Helvetica Neue",
+    Helvetica,
+    Arial,
+    "Lucida Grande",
+    sans-serif;
+}
+
+#tools{
+    position: absolute;
+    left: 225px;
+    top: 25px;
+}
+
+
+.eraseron{
+    background-color: #E74C3C;
+    color:#ECF0F1;
+    padding:5px;
+}
+
+.eraseroff{
+    background-color: #F0F4F5;
+    color: #2C3E50;
+    padding: 5px;
+}
+
+
+#sidebar{
+    position:absolute;
+    left: 0px;
+    top: 0px;
+    height: 100%;
+    width: 200px;
+    background-color: #2C3E50;
+}
+#chatbox{
+    background-color:#ECF0F1;
+    
+}
+.evenli{
+    color: #2C3E50;
+    list-style: none;
+    font-size: 12px;
+}
+
+.oddli{
+    color: #2C3E50;
+    list-style: none;
+    font-size: 12px;
+    background-color: #F0F4F5;
+}
+.userli{
+    color: #ECF0F1;
+    list-style: none;
+    font-size: 12px;
+    background-color: #2C3E50;
+    margin-top: 1px;
+    padding: 5px;
+}
+
+.systemli{
+    color: #ECF0F1;
+    list-style: none;
+    font-size: 12px;
+    background-color: #E74C3C;
+    margin-top: 1px;
+    padding: 5px;
+}
+.correctli{
+    color: #ECF0F1;
+    list-style: none;
+    font-size: 12px;
+    background-color: #91C46C;
+    margin-top: 1px;
+    padding: 5px;
+}
+#chatList {
+    height: 80vh;
+    overflow-y:scroll;
+    word-wrap: break-word;
+    margin-top: 5px;
+}
+#cvs {
+    position:absolute;
+    left:0px;
+    top:0px;
+    cursor:crosshair;
+    z-index: -1;
+}
+#chatInput{
+    width: 95%;
+    margin-left: 1%;
+}
+#drawname{
+    background-color: #2C3E50;
+    color: #ECF0F1;
+    text-align:center;
+}
+#timeLeft{
+    font-size: 60px;
+    background-color: #E74C3C;
+    color: #ECF0F1;
+    text-align:center;
+}
+#word{
+    font=size: 80px;
+    font-weight: bold;
+    background-color: #FFD651;
+    color: #2C3E50;
+    text-align: center;
+}

@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WHAT IS THIS 1993?</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- this is the client !-->
+    <script src='/socket.io/socket.io.js'></script>
+    <div id="game">
+
+        <div id="tools">
+            <div id="eraser" class="eraseron">eraser</div>
+        </div>
+
+        
+        <div id="sidebar">
+            <div id="drawname"></div>
+            <div id="word"></div>
+            <div id="timeLeft"></div>
+            <!-- This is the chatbox !-->
+            <div class="chatbox" id="chatbox">
+                <ul id="chatList"></ul>
+                <input id="chatInput" type="text" placeholder="Like O M G she did not!" maxlength="35" />
+            </div>
+        </div>
+
+
+        <canvas id="cvs"> </canvas>
+    </div>
+
+    
+    <script type="text/javascript" src="/app.js"></script>
+</body>
+</html>
