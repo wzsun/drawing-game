@@ -151,6 +151,9 @@ io.on('connection', function(socket){
     socket.broadcast.emit('drawOther', player);
   });
 
+  socket.on('color', function(color){
+    socket.broadcast.emit('colorSet', color);
+  });
 
 });
 

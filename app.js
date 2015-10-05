@@ -44,7 +44,7 @@ GAME.prototype.drawLine = function(prevx, prevy, currentx, currenty){
     this.ctx.strokeStyle = '#ffffff';
     this.ctx.lineWidth = 50;
   }else{
-    this.ctx.strokeStyle = '#000000';
+    this.ctx.strokeStyle = player.color;
     this.ctx.lineWidth = 1; 
   }
 
@@ -101,6 +101,8 @@ function PLAYER(){
   this.lastEmit = (new Date).getTime();
   this.id = Math.round((new Date).getTime()*Math.random());
   this.canDraw = false;
+
+  this.color = '#000000';
 }
 
 // DRAWS WHAT THE OTHER PLAYER IS DRAWING
@@ -168,6 +170,43 @@ game.eraser.addEventListener('mouseup', function(e){
   }
 });
 
+document.getElementById('turquoise').addEventListener('mouseup',function(e){
+  player.color = '#1abc9c';
+  socket.emit('color', player.color);
+});
+document.getElementById('emerald').addEventListener('mouseup',function(e){
+  player.color = '#2ecc71';
+  socket.emit('color', player.color);
+});
+document.getElementById('river').addEventListener('mouseup',function(e){
+  player.color = '#3498db';
+  socket.emit('color', player.color);
+});
+document.getElementById('sun').addEventListener('mouseup',function(e){
+  player.color = '#f1c40f';
+  socket.emit('color', player.color);
+});
+document.getElementById('carrot').addEventListener('mouseup',function(e){
+  player.color = '#e67e22';
+  socket.emit('color', player.color);
+});
+document.getElementById('alizarin').addEventListener('mouseup',function(e){
+  player.color = '#e74c3c';
+  socket.emit('color', player.color);
+});
+document.getElementById('amethyst').addEventListener('mouseup',function(e){
+  player.color = '#9b59b6';
+  socket.emit('color', player.color);
+});
+document.getElementById('asphalt').addEventListener('mouseup',function(e){
+  player.color = '#34495e';
+  socket.emit('color', player.color);
+});
+document.getElementById('concrete').addEventListener('mouseup',function(e){
+  player.color = '#95a5a6';
+  socket.emit('color', player.color);
+});
+
 socket.on('eraserStatus', function(status){
   if(status){
     game.eraser.className = 'eraseron';
@@ -175,6 +214,10 @@ socket.on('eraserStatus', function(status){
     game.eraser.className = 'eraseroff';
   }
   game.eraserStatus = status;
+});
+
+socket.on('colorSet', function(color){
+  player.color = color;
 });
 
 // chat

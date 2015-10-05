@@ -8,6 +8,7 @@ body {
     margin:0;
     padding:0;
 }
+
 html, #chatInput{
   font-family:
     "HelveticaNeue-Light",
@@ -19,26 +20,95 @@ html, #chatInput{
     sans-serif;
 }
 
+/* This is css for the color picker and eraser */
 #tools{
     position: absolute;
     left: 225px;
     top: 25px;
 }
 
+#turquoise{
+    float:left;
+    width:20px;
+    height:20px;
+    background-color:#1abc9c;
+}
+
+#emerald{
+    float:left;
+    width:20px;
+    height:20px;
+    background-color:#2ecc71;
+}
+
+#river{
+    float:left;
+    width:20px;
+    height:20px;
+    background-color: #3498db;
+}
+
+#sun{
+    float:left;
+    width:20px;
+    height:20px;
+    background-color:#f1c40f;
+}
+
+#carrot{
+    float:left;
+    width:20px;
+    height:20px;
+    background-color:#e67e22;
+}
+
+#alizarin{
+    float:left;
+    width:20px;
+    height:20px;
+    background-color: #e74c3c;
+}
+
+#amethyst{
+    float:left;
+    width:20px;
+    height:20px;
+    background-color:#9b59b6;
+}
+
+#asphalt{
+    float:left;
+    width:20px;
+    height:20px;
+    background-color:#34495e;
+}
+
+#concrete{
+    float:left;
+    width:20px;
+    height:20px;
+    background-color: #95a5a6;
+}
 
 .eraseron{
     background-color: #E74C3C;
     color:#ECF0F1;
     padding:5px;
+    width:50px;
+    float:left;
+    text-align: center;
 }
 
 .eraseroff{
     background-color: #F0F4F5;
     color: #2C3E50;
     padding: 5px;
+    width:50px;
+    float:left;
+    text-align: center;
 }
 
-
+/* side bar with chat */
 #sidebar{
     position:absolute;
     left: 0px;
@@ -90,7 +160,7 @@ html, #chatInput{
 }
 #chatList {
     height: 80vh;
-    overflow-y:scroll;
+    overflow-y:auto;
     word-wrap: break-word;
     margin-top: 5px;
 }
@@ -122,4 +192,13 @@ html, #chatInput{
     background-color: #FFD651;
     color: #2C3E50;
     text-align: center;
+}
+
+/* leaderboard */
+#leaderboard{
+    float:right;
+    margin-top:25px;
+    margin-right: 25px;
+    background-color:red;
+
 }
