@@ -311,7 +311,7 @@ var input = document.getElementById('chatInput');
 input.onkeypress = function(e){
   if (!e) e = window.event;
   var keyCode = e.keyCode || e.which;
-  if(keyCode == '13' && game.canChat){
+  if(keyCode == '13' && game.canChat && input.value.match(/[a-z]/i)){
     socket.emit('chat message', [player.id,input.value]);
     input.value = '';
     return false;
@@ -420,7 +420,7 @@ document.getElementById('startGame').onclick = function(){
 document.getElementById('username').onkeypress = function(e){
   if (!e) e = window.event;
   var keyCode = e.keyCode || e.which;
-  if(keyCode == '13' && game.canChat){
+  if(keyCode == '13' && game.canChat && document.getElementById('username').value.match(/[a-z]/i)){
     var username = document.getElementById('username').value;
     player.tempid = username;
     console.log(username);
