@@ -99,7 +99,7 @@ setInterval(function(){
     game.firstGuess = 0;
     game.isHere = false;
     io.emit('emptylobby');
-    checkScoekts();
+    checkSockets();
   }
 
 },1000);
