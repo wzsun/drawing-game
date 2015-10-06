@@ -5,11 +5,12 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var express = require('express');
 
-var dictionary = require('./dictionary.json');
-var dictionary_words = Object.keys(dictionary).map(function(k){
-    return k;
-});
-//dictionary = JSON.parse(dictionary);
+// read noune file line by line
+var dictionary_words = [];
+var dictionary = require('fs').readFileSync('nouns').toString().split('\n').forEach(function (line) { 
+  dictionary_words.push(line.toUpperCase()); 
+})
+
 
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html');
@@ -30,14 +31,17 @@ function GAME(){
   this.assignPoints = 10; // point value to assign
   this.inactiveTimeCheck = 30; // sets the duration for someone to be inactive
   this.isHere = false; // flag: sees if they are here
-  this.eraserStatus = false;
+  this.eraserStatus = false; // flag: if you erase or not
+  this.pointsDecay = false; // flag: checks if the points decay
+  this.startPoints = 10; // static: start points
 }
 
 // initialize the game
 var game = new GAME();
 
 // get first word
-game.currentWord = dictionary_words[0];
+game.currentWord = dictionary_words[Math.floor((Math.random() * dictionary_words.length))];
+console.log(game.currentWord);
 
 // game loop
 setInterval(function(){
@@ -57,6 +61,13 @@ setInterval(function(){
     io.emit('roundTime', game.currentRoundTime);
     game.currentRoundTime -= 1;
 
+
+    // decay points
+    if(game.pointsDecay && game.assignPoints > 3){
+      game.assignPoints -= 0.2;
+      game.assignPoints = Math.round( game.assignPoints * 10) / 10;
+      console.log('points: ' + game.assignPoints);
+    }
 
     // if drawer hasn't drawn anything for the first game.inactiveTimeCheck, go to next user
     if(game.currentRoundTime < game.roundTime - game.inactiveTimeCheck && game.isHere == false){
@@ -85,13 +96,15 @@ function reset(){
   game.firstGuess = 0;
   game.isHere = false;
   game.eraserStatus = false;
+  game.pointsDecay = false;
+  game.assignPoints = game.startPoints;
   // refresh to remove inactive players
 
   // shift everyone up a spot
   game.clients.push(game.clients.shift());
 
   dictionary_words.shift();
-  game.currentWord = dictionary_words[0];
+  game.currentWord = dictionary_words[Math.floor((Math.random() * dictionary_words.length))];;
 
   io.emit('resetCanvas');
   // reset things that need to be reset
@@ -119,6 +132,7 @@ io.on('connection', function(socket){
     if(data[1].toUpperCase() == game.currentWord && game.currentRoundTime > 0){
       console.log('guess correct');
       game.firstGuess += 1;
+      game.pointsDecay = true;
       if(game.firstGuess == 1){
         game.currentRoundTime = game.emergencyRoundTime;
         console.log('emergency time activated')
@@ -131,6 +145,7 @@ io.on('connection', function(socket){
         game.leaderboard[data[0]] = game.assignPoints;
       }
 
+      io.emit("leaderboard", game.leaderboard);
       game.sockets[data[0]].emit('correctAnswer', game.assignPoints);
     }else{
       io.emit('chat message', data[0] + ': ' + data[1]);

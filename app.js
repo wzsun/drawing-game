@@ -32,6 +32,9 @@ function GAME(){
 
   this.eraserStatus = false;
   this.eraserCheck = true;
+
+  var leaderboard = document.getElementById('userlist');
+  this.leaderboard = leaderboard;
 }
 
 // draws the lines on the canvas
@@ -83,6 +86,19 @@ GAME.prototype.writeMSG = function(msg, val){
   var chatList = document.getElementById('chatList');
   chatList.appendChild(newline);
   chatList.scrollTop = chatList.scrollHeight;
+}
+
+GAME.prototype.updateLeaderboard = function(leaderboard){
+  while(game.leaderboard.firstChild){
+    game.leaderboard.removeChild(game.leaderboard.firstChild);
+  }
+  for(var user in leaderboard){
+    if(leaderboard.hasOwnProperty(user)){
+      var newline = document.createElement('li');
+      newline.innerHTML = user + ": " + leaderboard[user];
+      game.leaderboard.appendChild(newline);
+    }
+  }
 }
 
 // CHANGES THE DRAWER's NAME
@@ -170,40 +186,106 @@ game.eraser.addEventListener('mouseup', function(e){
   }
 });
 
+var resetSelection = function(){
+  document.getElementById('turquoise').style.borderStyle = "none";
+  document.getElementById('emerald').style.borderStyle = "none";
+  document.getElementById('river').style.borderStyle = "none";
+  document.getElementById('sun').style.borderStyle = "none";
+  document.getElementById('carrot').style.borderStyle = "none";
+  document.getElementById('alizarin').style.borderStyle = "none";
+  document.getElementById('amethyst').style.borderStyle = "none";
+  document.getElementById('asphalt').style.borderStyle = "none";
+  document.getElementById('concrete').style.borderStyle = "none";
+};
+
 document.getElementById('turquoise').addEventListener('mouseup',function(e){
   player.color = '#1abc9c';
+
+  resetSelection();
+  document.getElementById('turquoise').style.borderStyle = "solid";
+  document.getElementById('turquoise').style.borderColor = "#2C3E50";
+  document.getElementById('turquoise').style.borderWidth = "1px";
+
   socket.emit('color', player.color);
 });
 document.getElementById('emerald').addEventListener('mouseup',function(e){
   player.color = '#2ecc71';
+
+  resetSelection();
+  document.getElementById('emerald').style.borderStyle = "solid";
+  document.getElementById('emerald').style.borderWidth = "1px";
+  document.getElementById('turquoise').style.borderColor = "#2C3E50";
+  
   socket.emit('color', player.color);
 });
 document.getElementById('river').addEventListener('mouseup',function(e){
   player.color = '#3498db';
+
+  resetSelection();
+  document.getElementById('river').style.borderStyle = "solid";
+  document.getElementById('river').style.borderWidth = "1px";
+  document.getElementById('turquoise').style.borderColor = "#2C3E50";
+  
   socket.emit('color', player.color);
 });
 document.getElementById('sun').addEventListener('mouseup',function(e){
   player.color = '#f1c40f';
+
+  resetSelection();
+  document.getElementById('sun').style.borderStyle = "solid";
+  document.getElementById('sun').style.borderWidth = "1px";
+  document.getElementById('turquoise').style.borderColor = "#2C3E50";
+  
   socket.emit('color', player.color);
 });
 document.getElementById('carrot').addEventListener('mouseup',function(e){
   player.color = '#e67e22';
+
+  resetSelection();
+  document.getElementById('carrot').style.borderStyle = "solid";
+  document.getElementById('carrot').style.borderWidth = "1px";
+  document.getElementById('turquoise').style.borderColor = "#2C3E50";
+  
   socket.emit('color', player.color);
 });
 document.getElementById('alizarin').addEventListener('mouseup',function(e){
   player.color = '#e74c3c';
+
+  resetSelection();
+  document.getElementById('alizarin').style.borderStyle = "solid";
+  document.getElementById('alizarin').style.borderWidth = "1px";
+  document.getElementById('turquoise').style.borderColor = "#2C3E50";
+  
   socket.emit('color', player.color);
 });
 document.getElementById('amethyst').addEventListener('mouseup',function(e){
   player.color = '#9b59b6';
+
+  resetSelection();
+  document.getElementById('amethyst').style.borderStyle = "solid";
+  document.getElementById('amethyst').style.borderWidth = "1px";
+  document.getElementById('turquoise').style.borderColor = "#2C3E50";
+  
   socket.emit('color', player.color);
 });
 document.getElementById('asphalt').addEventListener('mouseup',function(e){
   player.color = '#34495e';
+
+  resetSelection();
+  document.getElementById('asphalt').style.borderStyle = "solid";
+  document.getElementById('asphalt').style.borderWidth = "1px";
+  document.getElementById('turquoise').style.borderColor = "#2C3E50";
+  
   socket.emit('color', player.color);
 });
 document.getElementById('concrete').addEventListener('mouseup',function(e){
   player.color = '#95a5a6';
+
+  resetSelection();
+  document.getElementById('concrete').style.borderStyle = "solid";
+  document.getElementById('concrete').style.borderWidth = "1px";
+  document.getElementById('turquoise').style.borderColor = "#2C3E50";
+  
   socket.emit('color', player.color);
 });
 
@@ -303,6 +385,12 @@ socket.on('revealWord', function(word){
 socket.on('resetCanvas', function(){
   game.ctx.clearRect(0, 0, game.c.width, game.c.height);
 })
+
+// UPDATES LEADERBOARD
+socket.on('leaderboard', function(leaderboard){
+  game.updateLeaderboard(leaderboard);
+  console.log("in leaderboard update");
+});
 
 socket.on('checkinResponse',function(data){
   game.eraserStatus = data;
