@@ -416,6 +416,19 @@ document.getElementById('startGame').onclick = function(){
   socket.emit("checkUserTaken", username);
 }
 
+// enter for login screen
+document.getElementById('username').onkeypress = function(e){
+  if (!e) e = window.event;
+  var keyCode = e.keyCode || e.which;
+  if(keyCode == '13' && game.canChat){
+    var username = document.getElementById('username').value;
+    player.tempid = username;
+    console.log(username);
+    // 2. check if its taken
+    socket.emit("checkUserTaken", username);
+  };
+}
+
 socket.on("checkUserTakenReturn", function(taken){
   // 2.a if taken make him enter another, show error
   console.log('checkUserTakenReturn');
