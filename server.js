@@ -60,7 +60,7 @@ setInterval(function(){
     }
     console.log('--');
     */
-    
+
     // send out the word
     // give next person that draw oppertunity
     io.emit('assignDraw', game.clients[0].id);
@@ -99,6 +99,7 @@ setInterval(function(){
     game.firstGuess = 0;
     game.isHere = false;
     io.emit('emptylobby');
+    checkScoekts();
   }
 
 },1000);
