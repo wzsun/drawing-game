@@ -70,20 +70,20 @@ setInterval(function(){
       console.log('points: ' + game.assignPoints);
     }
 
+    console.log(game.sockets[game.clients[0].id].connected);
     // if drawer hasn't drawn anything for the first game.inactiveTimeCheck, go to next user
-    if(game.currentRoundTime < game.roundTime - game.inactiveTimeCheck && game.isHere == false){
+    if(game.currentRoundTime < game.roundTime - game.inactiveTimeCheck && game.isHere == false || game.sockets[game.clients[0].id].connected == false){
       io.emit('inactiveDrawer');
 
       // remove them from arrays
-      game.namestaken.splice(game.namestaken.indexOf(game.clients[0].id), 1);
+      game.namestaken.splice(0,1);
       game.clients.splice(0,1);
       reset();
     }
     if(game.currentRoundTime < 0){
-      io.emit('revealWord', game.currentWord);
       reset();
     }
-
+    checkSockets();
   }else{
     console.log('nobody in here');
     game.currentRoundTime = game.roundTime;
@@ -94,8 +94,24 @@ setInterval(function(){
 
 },1000);
 
+function checkSockets(){
+    // check if sockets still connected
+  for(var user in game.sockets){
+    if (game.sockets.hasOwnProperty(user)){
+      if(game.sockets[user].connected == false){
+        game.clients.splice(game.namestaken.indexOf(user),1);
+        game.namestaken.splice(game.namestaken.indexOf(user),1);
+        delete game.sockets[user];
+      }
+    }
+  }
+}
+
 // resets the game state
 function reset(){
+  // reveal word
+  io.emit('revealWord', game.currentWord);
+
   game.currentRoundTime = game.roundTime;
   game.firstGuess = 0;
   game.isHere = false;
@@ -105,9 +121,10 @@ function reset(){
   // refresh to remove inactive players
 
   // shift everyone up a spot
+  game.namestaken.push(game.namestaken.shift());
   game.clients.push(game.clients.shift());
 
-  dictionary_words.shift();
+  dictionary_words.push(dictionary_words.shift());
   game.currentWord = dictionary_words[Math.floor((Math.random() * dictionary_words.length))];;
 
   io.emit('resetCanvas');

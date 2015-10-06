@@ -322,7 +322,6 @@ input.onkeypress = function(e){
 socket.on('inactiveDrawer', function(){
   console.log('inactive user');
   player.canDraw = false;
-  game.canChat = false;
   game.writeMSG('Drawer is inactive, switching to next person.',1);
 });
 
@@ -343,7 +342,7 @@ socket.on('assignDraw', function(data){
   }else{
     player.canDraw = false;
     game.tools.style.display = 'none';
-    //player.canChat = true;
+    player.canChat = true;
     document.getElementById('word').innerHTML = '';
   }
 });
@@ -420,7 +419,7 @@ document.getElementById('startGame').onclick = function(){
 document.getElementById('username').onkeypress = function(e){
   if (!e) e = window.event;
   var keyCode = e.keyCode || e.which;
-  if(keyCode == '13' && game.canChat && document.getElementById('username').value.match(/[a-z]/i)){
+  if(keyCode == '13' && document.getElementById('username').value.match(/[a-z]/i)){
     var username = document.getElementById('username').value;
     player.tempid = username;
     console.log(username);
@@ -432,7 +431,7 @@ document.getElementById('username').onkeypress = function(e){
 socket.on("checkUserTakenReturn", function(taken){
   // 2.a if taken make him enter another, show error
   console.log('checkUserTakenReturn');
-  if(taken || player.tempid == ''){
+  if(taken || !player.tempid.match(/[a-z]/i)){
     document.getElementById('nameerror').style.display = "block";
   }else{ // 2.b if not close login screen, start game
     console.log("checkUserTakenReturn: false");
