@@ -432,7 +432,7 @@ document.getElementById('username').onkeypress = function(e){
 socket.on("checkUserTakenReturn", function(taken){
   // 2.a if taken make him enter another, show error
   console.log('checkUserTakenReturn');
-  if(taken || player.tempid = ''){
+  if(taken || player.tempid == ''){
     document.getElementById('nameerror').style.display = "block";
   }else{ // 2.b if not close login screen, start game
     console.log("checkUserTakenReturn: false");
