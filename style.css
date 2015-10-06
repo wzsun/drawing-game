@@ -143,6 +143,7 @@ html, #chatInput{
     height: 100%;
     width: 200px;
     background-color: #2C3E50;
+    z-index:0;
 }
 #chatbox{
     background-color:#ECF0F1;
@@ -181,7 +182,7 @@ html, #chatInput{
     color: #ECF0F1;
     list-style: none;
     font-size: 12px;
-    background-color: #91C46C;
+    background-color: #2ecc71;
     margin-top: 1px;
     padding: 5px;
 }
@@ -235,4 +236,89 @@ html, #chatInput{
 #userlist{
     list-style: none;
     font-size: 16px;
+}
+
+/* login */
+#login{
+    position:absolute;
+    background-color: rgba(44,62,80,0.9);
+    height:100%;
+    width: 100%;
+    z-index:1;
+}
+
+#title{
+    text-align: center;
+    margin-top: 10%;
+    font-size:30px;
+    color: white;
+    margin-bottom:1%;
+    width: 20%;
+    margin-left: 40%;
+}
+
+#username{
+    margin-left:40%;
+    width: 20%;
+    text-align: center;
+    padding: 10px;
+    border: solid 1px #dcdcdc;
+    transition: box-shadow 0.3s, border 0.3s;
+    box-sizing: border-box;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    margin-bottom: 10px;
+    outline: none;
+}
+
+#nameerror{
+    width: 20%;
+    margin-left: 40%;
+    margin-top:-15px;
+    padding-top:10px;
+    padding-bottom:5px;
+    text-align: center;
+    background-color:#E74C3C;
+    color:white;
+    font-size:12px;
+
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+
+    display:none;
+}
+
+#startGame {
+    position: relative;
+    margin: auto;
+    margin-top: 10px;
+    width: 20%;
+    margin-left: 40%;
+    height: 40px;
+    box-sizing: border-box;
+    font-size: large;
+    color: white;
+    text-align: center;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+    background: #2ecc71;
+    border: 0;
+    border-bottom: 2px solid #28be68;
+    cursor: pointer;
+    -webkit-box-shadow: inset 0 -2px #28be68;
+    box-shadow: inset 0 -2px #28be68;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+
+#startGame:active, #startGame:hover {
+    top: 1px;
+    background: #55D88B;
+    outline: none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
 }

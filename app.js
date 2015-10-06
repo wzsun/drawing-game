@@ -4,8 +4,6 @@ var socket = io();
 var game = new GAME();
 var player = new PLAYER();
 
-window.onload = init();
-
 // GAME OBJECT
 // keeps track of all the variables associated with the game
 function GAME(){
@@ -35,6 +33,9 @@ function GAME(){
 
   var leaderboard = document.getElementById('userlist');
   this.leaderboard = leaderboard;
+
+  this.nameTaken = true;
+  this.initCount = 0;
 }
 
 // draws the lines on the canvas
@@ -103,7 +104,8 @@ GAME.prototype.updateLeaderboard = function(leaderboard){
 
 // CHANGES THE DRAWER's NAME
 GAME.prototype.changeDrawName = function(name){
-  document.getElementById('drawname').innerHTML = name + " IS DRAWING";
+  document.getElementById('drawname').innerHTML = name.toUpperCase() + " IS DRAWING";
+  document.getElementById('drawname').style.fontWeight = "bold";
 }
 
 // PLAYER OBJECT
@@ -115,7 +117,8 @@ function PLAYER(){
   this.y = 0;
   this.drawing = false;
   this.lastEmit = (new Date).getTime();
-  this.id = Math.round((new Date).getTime()*Math.random());
+  this.id = "";
+  this.tempid = "";
   this.canDraw = false;
 
   this.color = '#000000';
@@ -393,16 +396,43 @@ socket.on('leaderboard', function(leaderboard){
 });
 
 socket.on('checkinResponse',function(data){
-  game.eraserStatus = data;
+  game.eraserStatus = data[0];
   if(game.eraserStatus){
     game.eraser.className = "eraseron";
   }else{
     game.eraser.className = "eraseroff";
   }
+
+  game.updateLeaderboard(data[1]);
 });
+
+// log-in stuff
+document.getElementById('startGame').onclick = function(){
+  // 1. get username
+  var username = document.getElementById('username').value;
+  player.tempid = username;
+  console.log(username);
+  // 2. check if its taken
+  socket.emit("checkUserTaken", username);
+}
+
+socket.on("checkUserTakenReturn", function(taken){
+  // 2.a if taken make him enter another, show error
+  console.log('checkUserTakenReturn');
+  if(taken){
+    document.getElementById('nameerror').style.display = "block";
+  }else{ // 2.b if not close login screen, start game
+    console.log("checkUserTakenReturn: false");
+    document.getElementById('login').style.display = "none";
+    player.id = player.tempid;
+    init();
+  }
+});
+
 
 // START THE CHECKIN
 function init(){
+  console.log("called init");
   socket.emit('checkin',player);
 }
 

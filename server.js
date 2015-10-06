@@ -22,6 +22,7 @@ app.use(express.static(__dirname + '/'));
 // Handles all variables associated with the game
 function GAME(){
   this.clients = []; // tracks the order of who draws
+  this.namestaken = []; // tracks the usernames taken
   this.leaderboard = {}; // tracks the points
   this.sockets = {}; // tracks the sockets of the players
   this.roundTime = 120; // sets the round time
@@ -72,6 +73,9 @@ setInterval(function(){
     // if drawer hasn't drawn anything for the first game.inactiveTimeCheck, go to next user
     if(game.currentRoundTime < game.roundTime - game.inactiveTimeCheck && game.isHere == false){
       io.emit('inactiveDrawer');
+
+      // remove them from arrays
+      game.namestaken.splice(game.namestaken.indexOf(game.clients[0].id), 1);
       game.clients.splice(0,1);
       reset();
     }
@@ -117,12 +121,23 @@ io.on('connection', function(socket){
 
   socket.on('checkin',function(data){
     game.clients.push(data);
+    game.namestaken.push(data.id);
 
     game.sockets[data.id] = socket;
     socket.broadcast.emit('someoneJoined', data.id);
-    socket.emit('checkinResponse', game.eraserStatus);
+    socket.emit('checkinResponse', [game.eraserStatus, game.leaderboard]);
     //delete game.clients[data.id];
     //console.log(socket);
+  });
+
+  // check user name is in list
+  socket.on("checkUserTaken", function(username){
+    if(game.namestaken.indexOf(username) > -1){
+      socket.emit("checkUserTakenReturn", true);
+    }else{
+      socket.emit("checkUserTakenReturn", false)
+    }
+    console.log('username: ' + username);
   });
 
   // chat and checks if person guess the word correctly
@@ -143,6 +158,12 @@ io.on('connection', function(socket){
         game.leaderboard[data[0]] += game.assignPoints;
       }else{
         game.leaderboard[data[0]] = game.assignPoints;
+      }
+
+      if(game.clients[0].id in game.leaderboard){
+        game.leaderboard[game.clients[0].id] += game.assignPoints;
+      }else{
+        game.leaderboard[game.clients[0].id] = game.assignPoints;
       }
 
       io.emit("leaderboard", game.leaderboard);
