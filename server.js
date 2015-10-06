@@ -35,6 +35,7 @@ function GAME(){
   this.eraserStatus = false; // flag: if you erase or not
   this.pointsDecay = false; // flag: checks if the points decay
   this.startPoints = 10; // static: start points
+  this.disconnect = false;
 }
 
 // initialize the game
@@ -46,12 +47,20 @@ console.log(game.currentWord);
 
 // game loop
 setInterval(function(){
+  //
   //console.log(game.clients.length);
   // check if there are people
   // if there are no people skip
   if(game.clients.length > 1){
-    console.log('current round time: ' + game.currentRoundTime);
+    //console.log('current round time: ' + game.currentRoundTime);
     //console.log('leaderboard: ' + game.leaderboard);
+    /*
+    for(var i=0; i<game.clients.length; i++){
+      console.log(game.clients[i].id);
+    }
+    console.log('--');
+    */
+    
     // send out the word
     // give next person that draw oppertunity
     io.emit('assignDraw', game.clients[0].id);
@@ -67,17 +76,17 @@ setInterval(function(){
     if(game.pointsDecay && game.assignPoints > 3){
       game.assignPoints -= 0.2;
       game.assignPoints = Math.round( game.assignPoints * 10) / 10;
-      console.log('points: ' + game.assignPoints);
+      //console.log('points: ' + game.assignPoints);
     }
 
-    console.log(game.sockets[game.clients[0].id].connected);
+    //console.log(game.sockets[game.clients[0].id].connected);
     // if drawer hasn't drawn anything for the first game.inactiveTimeCheck, go to next user
     if(game.currentRoundTime < game.roundTime - game.inactiveTimeCheck && game.isHere == false || game.sockets[game.clients[0].id].connected == false){
       io.emit('inactiveDrawer');
 
       // remove them from arrays
-      game.namestaken.splice(0,1);
-      game.clients.splice(0,1);
+      game.disconnect = true;
+      checkSockets();
       reset();
     }
     if(game.currentRoundTime < 0){
@@ -85,7 +94,7 @@ setInterval(function(){
     }
     checkSockets();
   }else{
-    console.log('nobody in here');
+    //console.log(game.clients.length);
     game.currentRoundTime = game.roundTime;
     game.firstGuess = 0;
     game.isHere = false;
@@ -120,9 +129,14 @@ function reset(){
   game.assignPoints = game.startPoints;
   // refresh to remove inactive players
 
+  // if  the person drawing didnt disconnect
   // shift everyone up a spot
-  game.namestaken.push(game.namestaken.shift());
-  game.clients.push(game.clients.shift());
+  if(!game.disconnect){
+    game.namestaken.push(game.namestaken.shift());
+    game.clients.push(game.clients.shift());
+  }
+
+  game.disconnect = false;
 
   dictionary_words.push(dictionary_words.shift());
   game.currentWord = dictionary_words[Math.floor((Math.random() * dictionary_words.length))];;
