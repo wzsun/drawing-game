@@ -26,13 +26,15 @@ function GAME(){
   this.clients = {};
   this.canChat = true;
   this.oddmsg = false;
-  this.emptyLobbyMsg = true;
 
   this.eraserStatus = false;
   this.eraserCheck = true;
 
   var leaderboard = document.getElementById('userlist');
   this.leaderboard = leaderboard;
+
+  var userOrderList = document.getElementById('playerOrder');
+  this.userOrderList = userOrderList;
 
   this.nameTaken = true;
   this.initCount = 0;
@@ -60,6 +62,7 @@ GAME.prototype.drawLine = function(prevx, prevy, currentx, currenty){
 // case 1 system
 // case 2 user joined
 // case 3 correct answer
+// case 4 close answer
 GAME.prototype.writeMSG = function(msg, val){
   var newline = document.createElement('li');
   
@@ -72,6 +75,9 @@ GAME.prototype.writeMSG = function(msg, val){
       break;
     case 3:
       newline.className = "correctli";
+      break;
+    case 4:
+      newline.className = "closeli";
       break;
     default:
       if(this.oddmsg){
@@ -106,6 +112,27 @@ GAME.prototype.updateLeaderboard = function(leaderboard){
 GAME.prototype.changeDrawName = function(name){
   document.getElementById('drawname').innerHTML = name.toUpperCase() + " IS DRAWING";
   document.getElementById('drawname').style.fontWeight = "bold";
+}
+
+GAME.prototype.updatePlayerList = function(playerlist){
+  // show user list
+  document.getElementById('emptylobby').style.display = "none";
+  game.userOrderList.style.display = "block";
+
+  var count = 1;
+
+  while(game.userOrderList.firstChild){
+    game.userOrderList.removeChild(game.userOrderList.firstChild);
+  }
+  for(var user in playerlist){
+    if(playerlist.hasOwnProperty(user)){
+      var newline = document.createElement('li');
+      newline.className = "orderlist";
+      newline.innerHTML = count + ': ' + playerlist[user].id;
+      game.userOrderList.appendChild(newline);
+      count++;
+    }
+  }
 }
 
 // PLAYER OBJECT
@@ -330,12 +357,18 @@ socket.on('chat message', function(msg){
   game.writeMSG(msg,0);
 });
 
+// recieves that guess was close
+socket.on('closeguess', function(){
+  game.writeMSG("Your guess was close.",4);
+});
+
 // CHECK TO SEE IF USER IS THE DRAWER
 socket.on('assignDraw', function(data){
-  game.changeDrawName(data);
-  game.emptyLobbyMsg = true;
+  game.changeDrawName(data[0].id);
+  //document.getElementById('emptylobby').style.display = "none";
+  game.updatePlayerList(data);
 
-  if(data == player.id){
+  if(data[0].id == player.id){
     player.canDraw = true;
     game.canChat = false;
     game.tools.style.display = 'block';
@@ -354,10 +387,8 @@ socket.on('someoneJoined',function(data){
 
 // RECIEVES THAT NO ONE IS IN THE LOBBY
 socket.on('emptylobby',function(){
-  if(game.emptyLobbyMsg){
-    game.writeMSG('There is currently no one else in the lobby.',1);
-    game.emptyLobbyMsg = false;
-  }
+  document.getElementById('emptylobby').style.display = "block";
+  game.userOrderList.style.display = "none";
 });
 
 // UPDATES THE ROUNDTIME

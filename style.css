@@ -174,7 +174,7 @@ html, #chatInput{
     color: #ECF0F1;
     list-style: none;
     font-size: 12px;
-    background-color: #E74C3C;
+    background-color: #e74c3c;
     margin-top: 1px;
     padding: 5px;
 }
@@ -182,12 +182,21 @@ html, #chatInput{
     color: #ECF0F1;
     list-style: none;
     font-size: 12px;
-    background-color: #2ecc71;
+    background-color: #27AE60;
     margin-top: 1px;
     padding: 5px;
 }
+.closeli{
+    color: #ECF0F1;
+    list-style: none;
+    font-size: 12px;
+    background-color: #E67E22;
+    margin-top: 1px;
+    padding: 5px;
+}
+
 #chatList {
-    height: 80vh;
+    height:60vh;
     overflow-y:auto;
     word-wrap: break-word;
     margin-top: 5px;
@@ -238,13 +247,41 @@ html, #chatInput{
     font-size: 16px;
 }
 
+#emptylobby{
+    color: #34495E;
+    text-align: center;
+    margin-top: 5px;
+    font-size: 12px;
+    background-color: #ECF0F1;
+    display:none;
+    padding: 10px;
+}
+
+/* user list */
+#playerOrder{
+    height: 10vh;
+    overflow-y:auto;
+    word-wrap: break-word;
+    margin-top: 5px;
+    background-color: #ECF0F1;
+    padding: 5px;
+}
+
+.orderlist{
+    color: #34495E;
+    list-style: none;
+    font-size: 12px;
+    background-color: #ECF0F1;
+    margin-left:5px;
+}
+
 /* login */
 #login{
     position:absolute;
     background-color: rgba(44,62,80,0.9);
     height:100%;
     width: 100%;
-    z-index:1;
+    z-index:2;
 }
 
 #title{

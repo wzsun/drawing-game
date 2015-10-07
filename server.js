@@ -43,7 +43,7 @@ var game = new GAME();
 
 // get first word
 game.currentWord = dictionary_words[Math.floor((Math.random() * dictionary_words.length))];
-console.log(game.currentWord);
+//console.log(game.currentWord);
 
 // game loop
 setInterval(function(){
@@ -63,7 +63,7 @@ setInterval(function(){
 
     // send out the word
     // give next person that draw oppertunity
-    io.emit('assignDraw', game.clients[0].id);
+    io.emit('assignDraw', game.clients);
     game.sockets[game.clients[0].id].emit('word',game.currentWord);
     
     // wait for timer, and check against inputs from chat
@@ -85,7 +85,7 @@ setInterval(function(){
       io.emit('inactiveDrawer');
 
       // remove them from arrays
-      game.disconnect = true;
+      //game.disconnect = true;
       checkSockets();
       reset();
     }
@@ -132,10 +132,10 @@ function reset(){
 
   // if  the person drawing didnt disconnect
   // shift everyone up a spot
-  if(!game.disconnect){
+  //if(!game.disconnect){
     game.namestaken.push(game.namestaken.shift());
     game.clients.push(game.clients.shift());
-  }
+  //}
 
   game.disconnect = false;
 
@@ -146,6 +146,21 @@ function reset(){
   // reset things that need to be reset
 }
 
+
+function hammingdistance(word){
+  var count = -1;
+  //console.log(game.currentWord.length + ":" + word.length);
+  if(game.currentWord.length == word.length){
+    count = 0;
+    for(var i=0; i<word.length; i++){
+      //console.log(game.currentWord.charAt(i) + ":" + word.charAt(i));
+      if(game.currentWord.charAt(i) != word.charAt(i)){
+        count++;
+      }
+    }
+  }
+  return count;
+}
 
 // intial connection
 // recieves all the connections
@@ -169,39 +184,43 @@ io.on('connection', function(socket){
     }else{
       socket.emit("checkUserTakenReturn", false)
     }
-    console.log('username: ' + username);
+    //console.log('username: ' + username);
   });
 
   // chat and checks if person guess the word correctly
   socket.on('chat message', function(data){
+    var worddiscrepency = hammingdistance(data[1].toUpperCase()); 
+    //console.log(worddiscrepency);
+    if(game.currentRoundTime > 0){
+      if(worddiscrepency == -1){
+        io.emit('chat message', data[0] + ': ' + data[1]);
+      }else if(worddiscrepency == 0){
+        game.firstGuess += 1;
+        game.pointsDecay = true;
+        if(game.firstGuess == 1){
+          game.currentRoundTime = game.emergencyRoundTime;
+        }
 
-    // if msg == dictionary word is first instance, set timer into emergency mode
-    if(data[1].toUpperCase() == game.currentWord && game.currentRoundTime > 0){
-      console.log('guess correct');
-      game.firstGuess += 1;
-      game.pointsDecay = true;
-      if(game.firstGuess == 1){
-        game.currentRoundTime = game.emergencyRoundTime;
-        console.log('emergency time activated')
-      }
+        // assign points to person
+        if(data[0] in game.leaderboard){
+          game.leaderboard[data[0]] += game.assignPoints;
+        }else{
+          game.leaderboard[data[0]] = game.assignPoints;
+        }
 
-      // assign points to person
-      if(data[0] in game.leaderboard){
-        game.leaderboard[data[0]] += game.assignPoints;
+        if(game.clients[0].id in game.leaderboard){
+          game.leaderboard[game.clients[0].id] += game.assignPoints;
+        }else{
+          game.leaderboard[game.clients[0].id] = game.assignPoints;
+        }
+
+        io.emit("leaderboard", game.leaderboard);
+        game.sockets[data[0]].emit('correctAnswer', game.assignPoints);
+      }else if(worddiscrepency <= 2){
+        socket.emit('closeguess');
       }else{
-        game.leaderboard[data[0]] = game.assignPoints;
+        io.emit('chat message', data[0] + ': ' + data[1]);
       }
-
-      if(game.clients[0].id in game.leaderboard){
-        game.leaderboard[game.clients[0].id] += game.assignPoints;
-      }else{
-        game.leaderboard[game.clients[0].id] = game.assignPoints;
-      }
-
-      io.emit("leaderboard", game.leaderboard);
-      game.sockets[data[0]].emit('correctAnswer', game.assignPoints);
-    }else{
-      io.emit('chat message', data[0] + ': ' + data[1]);
     }
 
     //console.log('message: ' + msg);
