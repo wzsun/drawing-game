@@ -38,6 +38,9 @@ function GAME(){
 
   this.nameTaken = true;
   this.initCount = 0;
+
+  this.emergencyTime = false;
+  this.timeLeftSwitch = true;
 }
 
 // draws the lines on the canvas
@@ -99,12 +102,10 @@ GAME.prototype.updateLeaderboard = function(leaderboard){
   while(game.leaderboard.firstChild){
     game.leaderboard.removeChild(game.leaderboard.firstChild);
   }
-  for(var user in leaderboard){
-    if(leaderboard.hasOwnProperty(user)){
+  for(var i=0; i<leaderboard.length; i++){
       var newline = document.createElement('li');
-      newline.innerHTML = user + ": " + leaderboard[user];
+      newline.innerHTML = leaderboard[i].name + ": " + Math.floor( leaderboard[i].points * 100) / 100;
       game.leaderboard.appendChild(newline);
-    }
   }
 }
 
@@ -363,6 +364,7 @@ socket.on('closeguess', function(){
 });
 
 // CHECK TO SEE IF USER IS THE DRAWER
+// main loop
 socket.on('assignDraw', function(data){
   game.changeDrawName(data[0].id);
   //document.getElementById('emptylobby').style.display = "none";
@@ -377,6 +379,16 @@ socket.on('assignDraw', function(data){
     game.tools.style.display = 'none';
     player.canChat = true;
     document.getElementById('word').innerHTML = '';
+  }
+
+  if(game.emergencyTime){
+    if(game.timeLeftSwitch){
+      document.getElementById('timeLeft').className = "timeleft1";
+      game.timeLeftSwitch = false;
+    }else{
+      document.getElementById('timeLeft').className = "timeleft2";
+      game.timeLeftSwitch = true;
+    }
   }
 });
 
@@ -398,7 +410,7 @@ socket.on('roundTime', function(time){
 
 // UPDATES THAT YOU GOT THE ANSWER
 socket.on('correctAnswer', function(data){
-  game.writeMSG('You guessed the word! +' + data + ' points',3);
+  game.writeMSG('You guessed the word! +' + Math.floor( data * 100) / 100 + ' points',3);
   game.canChat = false;
 });
 
@@ -417,6 +429,9 @@ socket.on('revealWord', function(word){
 // RESETS THE CANVAS
 socket.on('resetCanvas', function(){
   game.ctx.clearRect(0, 0, game.c.width, game.c.height);
+  document.getElementById('infobar').style.display = "none";
+  game.emergencyTime = false;
+  document.getElementById('timeLeft').className = "timeleft1";
 })
 
 // UPDATES LEADERBOARD
@@ -434,6 +449,11 @@ socket.on('checkinResponse',function(data){
   }
 
   game.updateLeaderboard(data[1]);
+  game.emergencyTime = data[2];
+
+  if(data[2] == true){
+    document.getElementById('infobar').style.display = "block";
+  }
 });
 
 // log-in stuff
@@ -470,6 +490,11 @@ socket.on("checkUserTakenReturn", function(taken){
     player.id = player.tempid;
     init();
   }
+});
+
+socket.on('emergencytime',function(){
+  game.emergencyTime = true;
+  document.getElementById('infobar').style.display = "block";
 });
 
 

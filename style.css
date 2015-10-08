@@ -219,9 +219,22 @@ html, #chatInput{
 }
 #timeLeft{
     font-size: 60px;
+    text-align:center;
+}
+.timeleft1{
     background-color: #E74C3C;
     color: #ECF0F1;
+}
+.timeleft2{
+    background-color:  #ECF0F1;
+    color: #E74C3C;
+}
+#infobar{
+    background-color: #e67e22;
     text-align:center;
+    color: #ECF0F1;
+    padding:1px;
+    display: none;
 }
 #word{
     font=size: 80px;
@@ -236,7 +249,7 @@ html, #chatInput{
     float:right;
     margin-top:25px;
     margin-right: 25px;
-    background-color: #FFD651;
+    background-color: rgba(255, 214, 81, 0.7);
     text-align: center;
     font-size:30px;
     color: #2C3E50;

@@ -24,6 +24,7 @@ function GAME(){
   this.clients = []; // tracks the order of who draws
   this.namestaken = []; // tracks the usernames taken
   this.leaderboard = {}; // tracks the points
+  this.sortedleaderboard = []; // sorted leaderboard
   this.sockets = {}; // tracks the sockets of the players
   this.roundTime = 120; // sets the round time
   this.emergencyRoundTime = 30; // sets the emergency round time
@@ -36,6 +37,7 @@ function GAME(){
   this.pointsDecay = false; // flag: checks if the points decay
   this.startPoints = 10; // static: start points
   this.disconnect = false;
+  this.emergencytimestatus = false;
 }
 
 // initialize the game
@@ -75,15 +77,14 @@ setInterval(function(){
     // decay points
     if(game.pointsDecay && game.assignPoints > 3){
       game.assignPoints -= 0.2;
-      game.assignPoints = Math.round( game.assignPoints * 10) / 10;
       //console.log('points: ' + game.assignPoints);
     }
 
     //console.log(game.sockets[game.clients[0].id].connected);
     // if drawer hasn't drawn anything for the first game.inactiveTimeCheck, go to next user
-    if(game.currentRoundTime < game.roundTime - game.inactiveTimeCheck && game.isHere == false || game.sockets[game.clients[0].id].connected == false){
+    if((game.currentRoundTime < game.roundTime - game.inactiveTimeCheck && game.isHere == false) || game.sockets[game.clients[0].id].connected == false){
       io.emit('inactiveDrawer');
-
+      //console.log(game.sockets[game.clients[0].id].connected)
       // remove them from arrays
       //game.disconnect = true;
       checkSockets();
@@ -98,11 +99,25 @@ setInterval(function(){
     game.currentRoundTime = game.roundTime;
     game.firstGuess = 0;
     game.isHere = false;
+    game.emergencytimestatus = false;
     io.emit('emptylobby');
     checkSockets();
   }
 
 },1000);
+
+function sortLeaderboard(){
+  game.sortedleaderboard = [];
+  for(var user in game.leaderboard){
+    if(game.leaderboard.hasOwnProperty(user)){
+      var tmp = {name:user, points: game.leaderboard[user]};
+      game.sortedleaderboard.push(tmp);
+    }
+  }
+  game.sortedleaderboard.sort(function(a, b){
+    return b.points - a.points;
+  });
+}
 
 function checkSockets(){
     // check if sockets still connected
@@ -122,6 +137,7 @@ function reset(){
   // reveal word
   io.emit('revealWord', game.currentWord);
 
+  game.emergencytimestatus = false;
   game.currentRoundTime = game.roundTime;
   game.firstGuess = 0;
   game.isHere = false;
@@ -172,7 +188,7 @@ io.on('connection', function(socket){
 
     game.sockets[data.id] = socket;
     socket.broadcast.emit('someoneJoined', data.id);
-    socket.emit('checkinResponse', [game.eraserStatus, game.leaderboard]);
+    socket.emit('checkinResponse', [game.eraserStatus, game.sortedleaderboard, game.emergencytimestatus]);
     //delete game.clients[data.id];
     //console.log(socket);
   });
@@ -199,6 +215,15 @@ io.on('connection', function(socket){
         game.pointsDecay = true;
         if(game.firstGuess == 1){
           game.currentRoundTime = game.emergencyRoundTime;
+
+          // assign points to drawer
+          if(game.clients[0].id in game.leaderboard){
+            game.leaderboard[game.clients[0].id] += game.assignPoints*.75;
+          }else{
+            game.leaderboard[game.clients[0].id] = game.assignPoints*.75;
+          }
+          game.emergencytimestatus = true;
+          io.emit('emergencytime');
         }
 
         // assign points to person
@@ -208,13 +233,15 @@ io.on('connection', function(socket){
           game.leaderboard[data[0]] = game.assignPoints;
         }
 
+        // assign points to drawer
         if(game.clients[0].id in game.leaderboard){
-          game.leaderboard[game.clients[0].id] += game.assignPoints;
+          game.leaderboard[game.clients[0].id] += game.assignPoints*.25;
         }else{
-          game.leaderboard[game.clients[0].id] = game.assignPoints;
+          game.leaderboard[game.clients[0].id] = game.assignPoints*.25;
         }
 
-        io.emit("leaderboard", game.leaderboard);
+        sortLeaderboard();
+        io.emit("leaderboard", game.sortedleaderboard);
         game.sockets[data[0]].emit('correctAnswer', game.assignPoints);
       }else if(worddiscrepency <= 2){
         socket.emit('closeguess');
