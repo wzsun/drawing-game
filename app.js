@@ -216,6 +216,12 @@ game.eraser.addEventListener('mouseup', function(e){
   }
 });
 
+// give hint
+document.getElementById('hint').addEventListener('mouseup', function(e){
+  socket.emit('givehint');
+  //console.log('press hint');
+});
+
 var resetSelection = function(){
   document.getElementById('turquoise').style.borderStyle = "none";
   document.getElementById('emerald').style.borderStyle = "none";
@@ -347,9 +353,14 @@ input.onkeypress = function(e){
 
 // RECIEVES THAT THE DRAWER IS INACTVE
 socket.on('inactiveDrawer', function(){
-  console.log('inactive user');
+  //console.log('inactive user');
   player.canDraw = false;
   game.writeMSG('Drawer is inactive, switching to next person.',1);
+});
+
+socket.on('givehintreturn',function(data){
+  document.getElementById('hintresult').innerHTML = data;
+  document.getElementById('hintresult').style.display = "block";
 });
 
 // RECIEVES CHAT FROM OTHER USERS
@@ -403,6 +414,8 @@ socket.on('emptylobby',function(){
   game.emergencyTime = false;
   document.getElementById('infobar').style.display = "none";
   document.getElementById('timeLeft').className = "timeleft1";
+  document.getElementById('hintresult').innerHTML = "";
+  document.getElementById('hintresult').style.display = "none";
 });
 
 // UPDATES THE ROUNDTIME
@@ -418,7 +431,7 @@ socket.on('correctAnswer', function(data){
 
 // UPDATES THE DRAWN WORD
 socket.on('word', function(data){
-  console.log(data);
+  //console.log(data);
   document.getElementById('word').innerHTML = data;
 });
 
@@ -434,12 +447,13 @@ socket.on('resetCanvas', function(){
   document.getElementById('infobar').style.display = "none";
   game.emergencyTime = false;
   document.getElementById('timeLeft').className = "timeleft1";
+  document.getElementById('hintresult').style.display = "none";
 })
 
 // UPDATES LEADERBOARD
 socket.on('leaderboard', function(leaderboard){
   game.updateLeaderboard(leaderboard);
-  console.log("in leaderboard update");
+  //console.log("in leaderboard update");
 });
 
 socket.on('checkinResponse',function(data){
@@ -458,12 +472,20 @@ socket.on('checkinResponse',function(data){
   }
 });
 
+socket.on('canGiveHint',function(data){
+  if(data){
+    document.getElementById('hint').style.display = "block";
+  }else{
+    document.getElementById('hint').style.display = "none";
+  }
+});
+
 // log-in stuff
 document.getElementById('startGame').onclick = function(){
   // 1. get username
   var username = document.getElementById('username').value;
   player.tempid = username;
-  console.log(username);
+  //console.log(username);
   // 2. check if its taken
   socket.emit("checkUserTaken", username);
 }
@@ -475,7 +497,7 @@ document.getElementById('username').onkeypress = function(e){
   if(keyCode == '13' && document.getElementById('username').value.match(/[a-z]/i)){
     var username = document.getElementById('username').value;
     player.tempid = username;
-    console.log(username);
+    //console.log(username);
     // 2. check if its taken
     socket.emit("checkUserTaken", username);
   };
@@ -483,11 +505,11 @@ document.getElementById('username').onkeypress = function(e){
 
 socket.on("checkUserTakenReturn", function(taken){
   // 2.a if taken make him enter another, show error
-  console.log('checkUserTakenReturn');
+  //console.log('checkUserTakenReturn');
   if(taken || !player.tempid.match(/[a-z]/i)){
     document.getElementById('nameerror').style.display = "block";
   }else{ // 2.b if not close login screen, start game
-    console.log("checkUserTakenReturn: false");
+    //console.log("checkUserTakenReturn: false");
     document.getElementById('login').style.display = "none";
     player.id = player.tempid;
     init();
@@ -502,7 +524,7 @@ socket.on('emergencytime',function(){
 
 // START THE CHECKIN
 function init(){
-  console.log("called init");
+  //console.log("called init");
   socket.emit('checkin',player);
 }
 

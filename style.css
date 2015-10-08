@@ -122,7 +122,6 @@ html, #chatInput{
     color:#ECF0F1;
     padding:5px;
     width:50px;
-    float:left;
     text-align: center;
 }
 
@@ -131,8 +130,15 @@ html, #chatInput{
     color: #2C3E50;
     padding: 5px;
     width:50px;
-    float:left;
     text-align: center;
+}
+
+#hint{
+    background-color: #2C3E50;
+    color: #ECF0F1;
+    text-align: center;
+    font-size: 12px;
+    padding: 5px;
 }
 
 /* side bar with chat */
@@ -247,6 +253,14 @@ html, #chatInput{
     text-align: center;
     color: #ECF0F1;
     padding: 5px;
+}
+#hintresult{
+    font-weight: bold;
+    background-color:#FFD651;
+    color: #2C3E50;
+    text-align: center;
+    padding: 2px;
+    display: none;
 }
 
 /* leaderboard */

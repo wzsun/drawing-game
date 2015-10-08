@@ -38,6 +38,9 @@ function GAME(){
   this.startPoints = 10; // static: start points
   this.disconnect = false;
   this.emergencytimestatus = false;
+  this.hint = [];
+  this.hintnumber = -1;
+  this.hintstatus = true;
 }
 
 // initialize the game
@@ -46,6 +49,7 @@ var game = new GAME();
 // get first word
 game.currentWord = dictionary_words[Math.floor((Math.random() * dictionary_words.length))];
 //console.log(game.currentWord);
+pushToHintArray();
 
 // game loop
 setInterval(function(){
@@ -66,13 +70,14 @@ setInterval(function(){
     // send out the word
     // give next person that draw oppertunity
     io.emit('assignDraw', game.clients);
+    // check if they can give hints
     game.sockets[game.clients[0].id].emit('word',game.currentWord);
+    game.sockets[game.clients[0].id].emit('canGiveHint',game.hintstatus);
     
     // wait for timer, and check against inputs from chat
     // subtract 1 second from round time
     io.emit('roundTime', game.currentRoundTime);
     game.currentRoundTime -= 1;
-
 
     // decay points
     if(game.pointsDecay && game.assignPoints > 3){
@@ -100,6 +105,9 @@ setInterval(function(){
     game.firstGuess = 0;
     game.isHere = false;
     game.emergencytimestatus = false;
+    pushToHintArray();
+    game.hintnumber = -1;
+    game.hintstatus = true;
     io.emit('emptylobby');
     checkSockets();
   }
@@ -132,6 +140,15 @@ function checkSockets(){
   }
 }
 
+// pushes word to hint array
+function pushToHintArray(){
+  game.hint = [];
+  for(var i=0; i<game.currentWord.length; i++){
+    var tmp = {letter:game.currentWord[i], status:false};
+    game.hint.push(tmp);
+  }
+}
+
 // resets the game state
 function reset(){
   // reveal word
@@ -144,6 +161,8 @@ function reset(){
   game.eraserStatus = false;
   game.pointsDecay = false;
   game.assignPoints = game.startPoints;
+  game.hintnumber = -1;
+  game.hintstatus = true;
   // refresh to remove inactive players
 
   // if  the person drawing didnt disconnect
@@ -156,7 +175,8 @@ function reset(){
   game.disconnect = false;
 
   dictionary_words.push(dictionary_words.shift());
-  game.currentWord = dictionary_words[Math.floor((Math.random() * dictionary_words.length))];;
+  game.currentWord = dictionary_words[Math.floor((Math.random() * dictionary_words.length))];
+  pushToHintArray();
 
   io.emit('resetCanvas');
   // reset things that need to be reset
@@ -193,6 +213,25 @@ io.on('connection', function(socket){
     //console.log(socket);
   });
 
+  socket.on('givehint', function(){
+    if(game.hintnumber == -1){
+      game.assignPoints -= game.startPoints * 1/(game.currentWord.length+2);
+    }else if(game.hintnumber < game.currentWord.length/2 && game.hintnumber>=0){
+      game.hint[game.hintnumber].status = true;
+      game.assignPoints -= game.startPoints * 1/(game.currentWord.length+2);
+    }else{
+      game.hintstatus = false;
+    }
+
+    var word = "";
+    for(var i=0; i<game.hint.length; i++){
+      word += ((game.hint[i].status)) ? game.hint[i].letter + " " : "_ ";
+    }
+
+    game.hintnumber++;
+    io.emit('givehintreturn',word);
+  });
+
   // check user name is in list
   socket.on("checkUserTaken", function(username){
     if(game.namestaken.indexOf(username) > -1){
@@ -223,6 +262,7 @@ io.on('connection', function(socket){
             game.leaderboard[game.clients[0].id] = game.assignPoints*.75;
           }
           game.emergencytimestatus = true;
+          game.hintstatus = false;
           io.emit('emergencytime');
         }
 
