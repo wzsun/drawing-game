@@ -119,7 +119,6 @@ GAME.prototype.updatePlayerList = function(playerlist){
   // show user list
   document.getElementById('emptylobby').style.display = "none";
   game.userOrderList.style.display = "block";
-
   var count = 1;
 
   while(game.userOrderList.firstChild){
@@ -401,6 +400,9 @@ socket.on('someoneJoined',function(data){
 socket.on('emptylobby',function(){
   document.getElementById('emptylobby').style.display = "block";
   game.userOrderList.style.display = "none";
+  game.emergencyTime = false;
+  document.getElementById('infobar').style.display = "none";
+  document.getElementById('timeLeft').className = "timeleft1";
 });
 
 // UPDATES THE ROUNDTIME
