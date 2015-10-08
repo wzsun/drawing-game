@@ -194,6 +194,8 @@ function hammingdistance(word){
         count++;
       }
     }
+  }else if(word.indexOf(game.currentWord) > -1){
+    count = 0;
   }
   return count;
 }
