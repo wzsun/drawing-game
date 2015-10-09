@@ -104,7 +104,7 @@ GAME.prototype.updateLeaderboard = function(leaderboard){
   }
   for(var i=0; i<leaderboard.length; i++){
       var newline = document.createElement('li');
-      newline.innerHTML = leaderboard[i].name + ": " + Math.floor( leaderboard[i].points * 100) / 100;
+      newline.innerHTML = (i+1) + ". " + leaderboard[i].name + ": " + Math.floor( leaderboard[i].points * 100) / 100;
       game.leaderboard.appendChild(newline);
   }
 }
@@ -484,6 +484,7 @@ socket.on('canGiveHint',function(data){
 document.getElementById('startGame').onclick = function(){
   // 1. get username
   var username = document.getElementById('username').value;
+  username = username.trim();
   player.tempid = username;
   //console.log(username);
   // 2. check if its taken
@@ -496,6 +497,7 @@ document.getElementById('username').onkeypress = function(e){
   var keyCode = e.keyCode || e.which;
   if(keyCode == '13' && document.getElementById('username').value.match(/[a-z]/i)){
     var username = document.getElementById('username').value;
+    username = username.trim();
     player.tempid = username;
     //console.log(username);
     // 2. check if its taken

@@ -51,6 +51,8 @@ game.currentWord = dictionary_words[Math.floor((Math.random() * dictionary_words
 //console.log(game.currentWord);
 pushToHintArray();
 
+//console.log("initial setup: " + game.clients.length);
+
 // game loop
 setInterval(function(){
   //
@@ -71,6 +73,7 @@ setInterval(function(){
     // give next person that draw oppertunity
     io.emit('assignDraw', game.clients);
     // check if they can give hints
+
     game.sockets[game.clients[0].id].emit('word',game.currentWord);
     game.sockets[game.clients[0].id].emit('canGiveHint',game.hintstatus);
     
@@ -98,7 +101,6 @@ setInterval(function(){
     if(game.currentRoundTime < 0){
       reset();
     }
-    checkSockets();
   }else{
     //console.log(game.clients.length);
     game.currentRoundTime = game.roundTime;
@@ -108,11 +110,16 @@ setInterval(function(){
     pushToHintArray();
     game.hintnumber = -1;
     game.hintstatus = true;
+
     io.emit('emptylobby');
-    checkSockets();
   }
 
 },1000);
+
+// check sockets way more often
+setInterval(function(){
+  checkSockets();
+}, 100);
 
 function sortLeaderboard(){
   game.sortedleaderboard = [];
@@ -206,6 +213,7 @@ io.on('connection', function(socket){
 
   socket.on('checkin',function(data){
     game.clients.push(data);
+    //console.log("checkin: pushed client " + game.clients.length);
     game.namestaken.push(data.id);
 
     game.sockets[data.id] = socket;
@@ -300,8 +308,12 @@ io.on('connection', function(socket){
     socket.broadcast.emit('eraserStatus', status);
   });
 
+  // there was a crash here
   socket.on('draw',function(player){
-    if(player.id == game.clients[0].id){
+    if(game.clients[0] === undefined){
+      console.log("ERROR: server crashed and someone was still connected, disconnecting user now");
+      socket.disconnect();
+    }else if(player.id == game.clients[0].id){
       game.isHere = true;
     }
     socket.broadcast.emit('drawOther', player);
