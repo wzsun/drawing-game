@@ -186,7 +186,8 @@ game.c.addEventListener('mousemove', function(e){
   player.x = e.clientX;
   player.y = e.clientY;
 
-  if((new Date).getTime() - player.lastEmit > 30){
+  // send time
+  if((new Date).getTime() - player.lastEmit > 10){
     
     socket.emit('draw',player);
     player.lastEmit = (new Date).getTime();
@@ -232,6 +233,9 @@ var resetSelection = function(){
   document.getElementById('amethyst').style.borderStyle = "none";
   document.getElementById('asphalt').style.borderStyle = "none";
   document.getElementById('concrete').style.borderStyle = "none";
+  document.getElementById('brown').style.borderStyle = "none";
+  document.getElementById('purple').style.borderStyle = "none";
+  document.getElementById('black').style.borderStyle = "none";
 };
 
 document.getElementById('turquoise').addEventListener('mouseup',function(e){
@@ -250,7 +254,7 @@ document.getElementById('emerald').addEventListener('mouseup',function(e){
   resetSelection();
   document.getElementById('emerald').style.borderStyle = "solid";
   document.getElementById('emerald').style.borderWidth = "1px";
-  document.getElementById('turquoise').style.borderColor = "#2C3E50";
+  document.getElementById('emerald').style.borderColor = "#2C3E50";
   
   socket.emit('color', player.color);
 });
@@ -260,7 +264,7 @@ document.getElementById('river').addEventListener('mouseup',function(e){
   resetSelection();
   document.getElementById('river').style.borderStyle = "solid";
   document.getElementById('river').style.borderWidth = "1px";
-  document.getElementById('turquoise').style.borderColor = "#2C3E50";
+  document.getElementById('river').style.borderColor = "#2C3E50";
   
   socket.emit('color', player.color);
 });
@@ -270,7 +274,7 @@ document.getElementById('sun').addEventListener('mouseup',function(e){
   resetSelection();
   document.getElementById('sun').style.borderStyle = "solid";
   document.getElementById('sun').style.borderWidth = "1px";
-  document.getElementById('turquoise').style.borderColor = "#2C3E50";
+  document.getElementById('sun').style.borderColor = "#2C3E50";
   
   socket.emit('color', player.color);
 });
@@ -280,7 +284,7 @@ document.getElementById('carrot').addEventListener('mouseup',function(e){
   resetSelection();
   document.getElementById('carrot').style.borderStyle = "solid";
   document.getElementById('carrot').style.borderWidth = "1px";
-  document.getElementById('turquoise').style.borderColor = "#2C3E50";
+  document.getElementById('carrot').style.borderColor = "#2C3E50";
   
   socket.emit('color', player.color);
 });
@@ -290,7 +294,7 @@ document.getElementById('alizarin').addEventListener('mouseup',function(e){
   resetSelection();
   document.getElementById('alizarin').style.borderStyle = "solid";
   document.getElementById('alizarin').style.borderWidth = "1px";
-  document.getElementById('turquoise').style.borderColor = "#2C3E50";
+  document.getElementById('alizarin').style.borderColor = "#2C3E50";
   
   socket.emit('color', player.color);
 });
@@ -300,7 +304,7 @@ document.getElementById('amethyst').addEventListener('mouseup',function(e){
   resetSelection();
   document.getElementById('amethyst').style.borderStyle = "solid";
   document.getElementById('amethyst').style.borderWidth = "1px";
-  document.getElementById('turquoise').style.borderColor = "#2C3E50";
+  document.getElementById('amethyst').style.borderColor = "#2C3E50";
   
   socket.emit('color', player.color);
 });
@@ -310,7 +314,7 @@ document.getElementById('asphalt').addEventListener('mouseup',function(e){
   resetSelection();
   document.getElementById('asphalt').style.borderStyle = "solid";
   document.getElementById('asphalt').style.borderWidth = "1px";
-  document.getElementById('turquoise').style.borderColor = "#2C3E50";
+  document.getElementById('asphalt').style.borderColor = "#2C3E50";
   
   socket.emit('color', player.color);
 });
@@ -320,7 +324,37 @@ document.getElementById('concrete').addEventListener('mouseup',function(e){
   resetSelection();
   document.getElementById('concrete').style.borderStyle = "solid";
   document.getElementById('concrete').style.borderWidth = "1px";
-  document.getElementById('turquoise').style.borderColor = "#2C3E50";
+  document.getElementById('concrete').style.borderColor = "#2C3E50";
+  
+  socket.emit('color', player.color);
+});
+document.getElementById('purple').addEventListener('mouseup',function(e){
+  player.color = '#BB3658';
+
+  resetSelection();
+  document.getElementById('purple').style.borderStyle = "solid";
+  document.getElementById('purple').style.borderWidth = "1px";
+  document.getElementById('purple').style.borderColor = "#2C3E50";
+  
+  socket.emit('color', player.color);
+});
+document.getElementById('brown').addEventListener('mouseup',function(e){
+  player.color = '#6D4C41';
+
+  resetSelection();
+  document.getElementById('brown').style.borderStyle = "solid";
+  document.getElementById('brown').style.borderWidth = "1px";
+  document.getElementById('brown').style.borderColor = "#2C3E50";
+  
+  socket.emit('color', player.color);
+});
+document.getElementById('black').addEventListener('mouseup',function(e){
+  player.color = '#3B3C3D';
+
+  resetSelection();
+  document.getElementById('black').style.borderStyle = "solid";
+  document.getElementById('black').style.borderWidth = "1px";
+  document.getElementById('black').style.borderColor = "#2C3E50";
   
   socket.emit('color', player.color);
 });
@@ -454,6 +488,11 @@ socket.on('resetCanvas', function(){
 socket.on('leaderboard', function(leaderboard){
   game.updateLeaderboard(leaderboard);
   //console.log("in leaderboard update");
+});
+
+// dev msg
+socket.on('devmsg', function(msg){
+  game.writeMSG("dev: "+msg,1);
 });
 
 socket.on('checkinResponse',function(data){

@@ -190,10 +190,12 @@ function reset(){
 }
 
 
-function hammingdistance(word){
+function processText(word){
   var count = -1;
   //console.log(game.currentWord.length + ":" + word.length);
-  if(game.currentWord.length == word.length){
+  if(word.indexOf("/dev".toUpperCase()) > -1){
+    count = -3
+  }else if(game.currentWord.length == word.length){
     count = 0;
     for(var i=0; i<word.length; i++){
       //console.log(game.currentWord.charAt(i) + ":" + word.charAt(i));
@@ -256,7 +258,7 @@ io.on('connection', function(socket){
 
   // chat and checks if person guess the word correctly
   socket.on('chat message', function(data){
-    var worddiscrepency = hammingdistance(data[1].toUpperCase()); 
+    var worddiscrepency = processText(data[1].toUpperCase()); 
     //console.log(worddiscrepency);
     if(game.currentRoundTime > 0){
       if(worddiscrepency == -1){
@@ -295,6 +297,8 @@ io.on('connection', function(socket){
         sortLeaderboard();
         io.emit("leaderboard", game.sortedleaderboard);
         game.sockets[data[0]].emit('correctAnswer', game.assignPoints);
+      }else if(worddiscrepency == -3){
+        io.emit("devmsg", data[1].substring(4));
       }else if(worddiscrepency <= 2){
         socket.emit('closeguess');
       }else{
