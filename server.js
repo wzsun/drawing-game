@@ -203,6 +203,8 @@ function hammingdistance(word){
     }
   }else if(word.indexOf(game.currentWord) > -1){
     count = 0;
+  }else if(game.currentWord.indexOf(word) > -1){ // if your answer is a substring
+    count = -2;
   }
   return count;
 }
