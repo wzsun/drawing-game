@@ -48,7 +48,7 @@ var game = new GAME();
 
 // get first word
 game.currentWord = dictionary_words[Math.floor((Math.random() * dictionary_words.length))];
-//console.log(game.currentWord);
+console.log("CW: " + game.currentWord);
 pushToHintArray();
 
 //console.log("initial setup: " + game.clients.length);
@@ -184,6 +184,8 @@ function reset(){
   dictionary_words.push(dictionary_words.shift());
   game.currentWord = dictionary_words[Math.floor((Math.random() * dictionary_words.length))];
   pushToHintArray();
+
+  console.log("CW: " + game.currentWord);
 
   io.emit('resetCanvas');
   // reset things that need to be reset
