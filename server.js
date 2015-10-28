@@ -59,7 +59,7 @@ setInterval(function(){
   //console.log(game.clients.length);
   // check if there are people
   // if there are no people skip
-  if(game.clients.length > 1){
+  if(game.clients.length > 1 && game.clients[0].inactive == false){
     //console.log('current round time: ' + game.currentRoundTime);
     //console.log('leaderboard: ' + game.leaderboard);
     /*
@@ -92,6 +92,7 @@ setInterval(function(){
     // if drawer hasn't drawn anything for the first game.inactiveTimeCheck, go to next user
     if((game.currentRoundTime < game.roundTime - game.inactiveTimeCheck && game.isHere == false) || game.sockets[game.clients[0].id].connected == false){
       io.emit('inactiveDrawer');
+      game.clients[0].inactive = true;
       //console.log(game.sockets[game.clients[0].id].connected)
       // remove them from arrays
       //game.disconnect = true;
@@ -110,6 +111,12 @@ setInterval(function(){
     pushToHintArray();
     game.hintnumber = -1;
     game.hintstatus = true;
+
+    //else shift <- inactive
+    if(game.clients.length > 1){
+      game.namestaken.push(game.namestaken.shift());
+      game.clients.push(game.clients.shift());
+    } 
 
     io.emit('emptylobby');
   }
@@ -260,6 +267,13 @@ io.on('connection', function(socket){
 
   // chat and checks if person guess the word correctly
   socket.on('chat message', function(data){
+    for(var i=0; i<game.clients.length; i++){
+      if(game.clients[i].id == data[0]){
+        game.clients[i].inactive = false;
+        break;
+      }
+    }
+
     var worddiscrepency = processText(data[1].toUpperCase()); 
     //console.log(worddiscrepency);
     if(game.currentRoundTime > 0){

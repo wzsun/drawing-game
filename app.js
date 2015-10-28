@@ -129,6 +129,7 @@ GAME.prototype.updatePlayerList = function(playerlist){
       var newline = document.createElement('li');
       newline.className = "orderlist";
       newline.innerHTML = count + ': ' + playerlist[user].id;
+      newline.innerHTML += playerlist[user].inactive?' (inactive)':'';
       game.userOrderList.appendChild(newline);
       count++;
     }
@@ -147,6 +148,7 @@ function PLAYER(){
   this.id = "";
   this.tempid = "";
   this.canDraw = false;
+  this.inactive = false;
 
   this.color = '#000000';
 }
